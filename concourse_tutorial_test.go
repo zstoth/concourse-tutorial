@@ -6,7 +6,7 @@ import (
 )
 
 var _ = Describe("Concourse Tutorial", func() {
-	Describe("dummy test", func() {
+	Describe("Dummy test", func() {
 		Context("Where a string", func() {
 			It("should be equals another", func() {
 				Expect("HELLO").To(Equal("HELLO"))
