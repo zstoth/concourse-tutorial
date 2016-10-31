@@ -1,12 +1,16 @@
 package main_test
 
 import (
-	. "github.com/hellofresh/concourse-tutorial"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("ConcourseTutorial", func() {
-
+var _ = Describe("Concourse Tutorial", func() {
+	Describe("dummy test", func() {
+		Context("Where a string", func() {
+			It("should be equals another", func() {
+				Expect("HELLO").To(Equal("HELLO"))
+			})
+		})
+	})
 })
