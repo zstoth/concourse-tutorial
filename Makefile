@@ -28,18 +28,9 @@ build:
 	@echo "$(OK_COLOR)==> Building project$(NO_COLOR)"
 	@go build -o ${BINARY} ${GO_LINKER_FLAGS} ${SRC_AUTH}
 
-# Builds the project
-build:
-	@echo "$(OK_COLOR)==> Building project$(NO_COLOR)"
-	@go build -o ${BINARY} ${GO_LINKER_FLAGS} ${SRC_AUTH}
-
 # Format the source code
 fmt:
 	@gofmt -s=true -w $(GO_PROJECT_FILES)
-
-# Tests the project
-fmt:
-	@ginkgo -r
 
 # Cleans our project: deletes binaries
 clean:
