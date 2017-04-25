@@ -1,0 +1,31 @@
+---
+resources:
+  - name: super-app
+    type: git
+    source:
+      uri: https://github.com/hellofresh/concourse-tutorial.git
+      branch: ci
+
+jobs:
+  - name: Testing
+    plan:
+    - get: super-app
+      trigger: true
+    - aggregate:
+      - task: lint
+        file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+
+      - task: unit
+        file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
+
+  - name: Building & integeration testing
+    plan:
+    - get: super-app
+      passed: ["Testing"]
+      trigger: true
+
+    - task: build
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/build.yml
+
+    - task: integeration test
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/integeration.yml
