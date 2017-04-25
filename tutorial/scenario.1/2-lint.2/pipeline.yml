@@ -1,0 +1,25 @@
+---
+resources:
+  - name: super-app
+    type: git
+    source:
+      uri: https://github.com/ahelal/concourse-tutorial.git
+      branch: feature/ci
+
+jobs:
+  - name: Test
+    plan:
+    - get: super-app
+      trigger: true
+    - task: Testing
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: golang}
+        run:
+          path: ./test_fmt.sh
+          dir: super-app/scripts
+
+        inputs:
+          - name: super-app
