@@ -1,0 +1,19 @@
+---
+
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: golang}
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    ./scripts/go_deps.sh
+    ./scripts/go_build.sh linux 0.0.1
+    mv super_*_linux_amd64 ../artifact
+  dir: super-app/
+inputs:
+  - name: super-app
+outputs:
+  - name: artifact

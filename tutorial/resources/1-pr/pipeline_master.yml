@@ -7,22 +7,26 @@ resources:
       branch: ci
 
 jobs:
-  - name: Testing
+  - name: Master unit testing
     plan:
     - get: super-app
       trigger: true
 
-    - aggregate:
-      - task: lint
-        file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+    - task: run unit
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
 
-      - task: unit
-        file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
-
-  - name: Building & integeration testing
+  - name: Master lint testing
     plan:
     - get: super-app
-      passed: ["Testing"]
+      trigger: true
+
+    - task: run lint
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+
+  - name: Master building & integeration testing
+    plan:
+    - get: super-app
+      passed: ["unit testing", "lint testing"]
       trigger: true
 
     - task: build

@@ -1,0 +1,44 @@
+---
+##
+## Resources types Secition
+##
+resource_types    :
+  - name          : pull-request
+    type          : docker-image
+    source        :
+      repository  : jtarchie/pr
+
+resources:
+  - name: super-app
+    type: pull-request
+    source:
+      repo: hellofresh/concourse-tutorial
+
+jobs:
+  - name: PR unit testing
+    plan:
+    - get: super-app
+      trigger: true
+
+    - task: run unit
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
+
+  - name: PR lint testing
+    plan:
+    - get: super-app
+      trigger: true
+
+    - task: run lint
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+
+  - name: PR building & integeration testing
+    plan:
+    - get: super-app
+      passed: ["PR unit testing", "PR lint testing"]
+      trigger: true
+
+    - task: build
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/build.yml
+
+    - task: integeration test
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/integeration.yml
