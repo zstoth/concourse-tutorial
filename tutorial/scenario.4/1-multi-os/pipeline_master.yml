@@ -32,7 +32,7 @@ jobs:
       - task: build mac
         file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_mac.yml
 
-      - task: build mac
+      - task: build windows
         file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_windows.yml
 
 

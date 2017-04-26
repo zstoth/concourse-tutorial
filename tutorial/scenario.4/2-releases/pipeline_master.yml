@@ -1,0 +1,60 @@
+---
+resources:
+  - name: super-app
+    type: git
+    source:
+      uri: https://github.com/hellofresh/concourse-tutorial.git
+      branch: ci
+
+  -   name: release-final
+      type: github-release
+      source:
+        user: hellofresh
+        repository: concourse-tutorial
+        access_token: {{github_token}}
+        pre_release: True
+
+jobs:
+  - name: initial testing
+    plan:
+    - get: super-app
+      trigger: true
+
+    - aggregate:
+      - task: run unit
+        file: super-app/tutorial/scenario.4/2-releases/tasks/unit.yml
+
+      - task: run lint
+        file: super-app/tutorial/scenario.4/2-releases/tasks/lint.yml
+
+  - name: Master build
+    plan:
+    - get: super-app
+      passed: ["initial testing"]
+      trigger: true
+
+    - aggregate:
+      - task: build linux
+        file: super-app/tutorial/scenario.4/2-releases/tasks/build_linux.yml
+
+      - task: build mac
+        file: super-app/tutorial/scenario.4/2-releases/tasks/build_mac.yml
+
+      - task: build windows
+        file: super-app/tutorial/scenario.4/2-releases/tasks/build_windows.yml
+
+      - put: release-final
+        params:
+          name: super-app/tutorial/scenario.4/2-releases/version
+          tag : super-app/tutorial/scenario.4/2-releases/version
+          tag_prefix: v
+        globs:
+        - artifact_linux/super_*_linux_amd64
+        - artifact_windows/super_*_windows_amd64
+        - artifact_mac/super_*_mac_amd64
+
+
+  #- name: Master integeration test
+  #  plan:
+    # - task: integeration test
+    #   file: super-app/tutorial/scenario.2/2-releases/tasks/integeration.yml
