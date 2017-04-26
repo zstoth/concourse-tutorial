@@ -7,40 +7,33 @@ resources:
       branch: ci
 
 jobs:
-  - name: Master unit testing
+  - name: initial testing
     plan:
     - get: super-app
       trigger: true
 
-    - task: run unit
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
+    - aggregate:
+      - task: run unit
+        file: super-app/tutorial/scenario.4/1-multi-os/tasks/unit.yml
 
-  - name: Master lint testing
+      - task: run lint
+        file: super-app/tutorial/scenario.4/1-multi-os/tasks/lint.yml
+
+
+  - name: Master build
     plan:
     - get: super-app
+      passed: ["initial testing"]
       trigger: true
+    - aggregate:
+      - task: build linux
+        file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_linux.yml
 
-    - task: run lint
-      file: super-app/tutorial/scenario.4/1-multi-os/tasks/lint.yml
+      - task: build mac
+        file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_mac.yml
 
-  - name: Master building linux
-    plan:
-    - get: super-app
-      passed: ["Master unit testing", "Master lint testing"]
-      trigger: true
-
-    - task: build
-      file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_linux.yml
-
-  - name: Master building Mac
-    plan:
-    - get: super-app
-      passed: ["Master unit testing", "Master lint testing"]
-      trigger: true
-
-    - task: build
-      file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_mac.yml
-
+      - task: build mac
+        file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_windows.yml
 
 
     # - task: integeration test

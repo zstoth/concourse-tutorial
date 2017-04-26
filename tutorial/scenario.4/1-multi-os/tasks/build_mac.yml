@@ -10,7 +10,7 @@ run:
   - -exc
   - |
     ./scripts/go_deps.sh
-    ./scripts/go_build.sh mac 0.0.1
+    ./scripts/go_build.sh darwin 0.0.1
     mv super_*_linux_amd64 ../artifact_mac
   dir: super-app/
 inputs:
