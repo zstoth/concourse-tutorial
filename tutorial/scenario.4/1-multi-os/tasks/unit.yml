@@ -1,0 +1,15 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: golang}
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    ./scripts/go_deps.sh
+    ./scripts/test_unit.sh
+  dir: super-app/
+inputs:
+  - name: super-app

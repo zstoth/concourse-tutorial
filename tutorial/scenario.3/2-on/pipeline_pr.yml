@@ -1,0 +1,88 @@
+---
+## Define custom resource
+resource_types    :
+  - name          : pull-request
+    type          : docker-image
+    source        :
+      repository  : jtarchie/pr
+
+resources:
+  - name: super-app
+    type: pull-request
+    source:
+      repo: hellofresh/concourse-tutorial
+      access_token: REPLACE_ME
+
+jobs:
+  - name: PR unit testing
+    plan:
+    - get: super-app
+      trigger: true
+      # Make a context "unit tests" status pending in Github Pull request
+    - put: super-app
+      params: {path: super-app, context: Unit tests, status: pending}
+
+    - task: run unit
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
+      on_success:
+    # Define success/failure on a job level
+    on_success:
+        put: super-app
+        params: {path: super-app, context: Unit tests, status: success}
+    on_failure:
+        put: super-app
+        params: {path: super-app, context: Unit tests, status: failure}
+
+  - name: PR lint testing
+    plan:
+    - get: super-app
+      trigger: true
+
+      # Make a context "lint tests" status pending in Github Pull request
+    - put: super-app
+      params: {path: super-app, context: lint tests, status: pending}
+
+    - task: run lint
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+    # Define success/failure on a job level
+    on_success:
+        put: super-app
+        params: {path: super-app, context: lint tests, status: success}
+    on_failure:
+        put: super-app
+        params: {path: super-app, context: lint tests, status: failure}
+
+  - name: PR building & integeration testing
+    plan:
+    - get: super-app
+      passed: ["PR unit testing", "PR lint testing"]
+      trigger: true
+
+      # Make a context "build & integeration tests" status pending in Github Pull request
+    - put: super-app
+      params: {path: super-app, context: build & integeration tests, status: pending}
+
+    - task: run lint
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+
+    - task: build
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/build.yml
+      on_failure:
+        do:
+         - put: super-app
+           params: {path: super-app, context: build & integeration tests, status: failure}
+         - put: super-app
+           params: {path: super-app, context: build, status: failure}
+
+    - task: integeration test
+      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/integeration.yml
+      on_failure:
+        do:
+         - put: super-app
+           params: {path: super-app, context: build & integeration tests, status: failure}
+         - put: super-app
+           params: {path: super-app, context: integeration tests, status: failure}
+
+      # Make a context "build & integeration tests" status sucess in Github Pull request
+    - put: super-app
+      params: {path: super-app, context: build & integeration tests, status: sucess}
