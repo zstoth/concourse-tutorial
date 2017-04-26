@@ -37,21 +37,21 @@ jobs:
       - task: build linux
         file: super-app/tutorial/scenario.4/2-releases/tasks/build_linux.yml
 
-      - task: build mac
-        file: super-app/tutorial/scenario.4/2-releases/tasks/build_mac.yml
+      - task: build darwin
+        file: super-app/tutorial/scenario.4/2-releases/tasks/build_darwin.yml
 
       - task: build windows
         file: super-app/tutorial/scenario.4/2-releases/tasks/build_windows.yml
 
-      - put: release-final
-        params:
-          name: super-app/tutorial/scenario.4/2-releases/version
-          tag : super-app/tutorial/scenario.4/2-releases/version
-          tag_prefix: v
-        globs:
-        - artifact_linux/super_*_linux_amd64
-        - artifact_windows/super_*_windows_amd64
-        - artifact_mac/super_*_mac_amd64
+    - put: release-final
+      params:
+        name: super-app/tutorial/scenario.4/2-releases/version
+        tag : super-app/tutorial/scenario.4/2-releases/version
+        tag_prefix: v
+      globs:
+      - artifact_linux/super_*_linux_amd64
+      - artifact_windows/super_*_windows_amd64
+      - artifact_mac/super_*_darwin_amd64
 
 
   #- name: Master integeration test
