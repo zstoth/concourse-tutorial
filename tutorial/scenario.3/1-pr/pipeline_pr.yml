@@ -21,7 +21,7 @@ jobs:
       trigger: true
 
     - task: run unit
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
+      file: super-app/tutorial/scenario.3/1-pr/tasks/unit.yml
 
   - name: PR lint testing
     plan:
@@ -29,7 +29,7 @@ jobs:
       trigger: true
 
     - task: run lint
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+      file: super-app/tutorial/scenario.3/1-pr/tasks/lint.yml
 
   - name: PR building & integeration testing
     plan:
@@ -38,7 +38,7 @@ jobs:
       trigger: true
 
     - task: build
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/build.yml
+      file: super-app/tutorial/scenario.3/1-pr/tasks/build.yml
 
     - task: integeration test
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/integeration.yml
+      file: super-app/tutorial/scenario.3/1-pr/tasks/integeration.yml

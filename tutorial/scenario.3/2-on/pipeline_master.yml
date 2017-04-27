@@ -13,7 +13,7 @@ jobs:
       trigger: true
 
     - task: run unit
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/unit.yml
 
   - name: Master lint testing
     plan:
@@ -21,7 +21,7 @@ jobs:
       trigger: true
 
     - task: run lint
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/lint.yml
 
   - name: Master building & integeration testing
     plan:
@@ -30,7 +30,7 @@ jobs:
       trigger: true
 
     - task: build
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/build.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/build.yml
 
     - task: integeration test
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/integeration.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/integeration.yml

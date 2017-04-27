@@ -6,7 +6,7 @@ resources:
       uri: https://github.com/hellofresh/concourse-tutorial.git
       branch: ci
 
-  -   name: release-final
+  -   name: release-rc
       type: github-release
       source:
         user: hellofresh
@@ -43,18 +43,47 @@ jobs:
       - task: build windows
         file: super-app/tutorial/scenario.4/2-releases/tasks/build_windows.yml
 
-    - put: release-final
+    - put: release-rc
       params:
         name: super-app/tutorial/scenario.4/2-releases/version
         tag : super-app/tutorial/scenario.4/2-releases/version
         tag_prefix: v
-      globs:
-      - artifact_linux/super_*_linux_amd64
-      - artifact_windows/super_*_windows_amd64
-      - artifact_mac/super_*_darwin_amd64
+        globs:
+          - artifact_linux/super_*_linux_amd64
+          - artifact_windows/super_*_windows_amd64
+          - artifact_darwin/super_*_darwin_amd64
+
+  - name: Integeration test
+    plan:
+
+    - get: release-rc
+      passed: ["Master build"]
+      params:
+        globs:
+          - super_*_linux_amd64
+      #trigger: true
+
+    - get: super-app
+      passed: ["Master build"]
+      trigger: true
+
+    - task: integeration test
+      file: super-app/tutorial/scenario.4/2-releases/tasks/integeration.yml
 
 
-  #- name: Master integeration test
-  #  plan:
-    # - task: integeration test
-    #   file: super-app/tutorial/scenario.2/2-releases/tasks/integeration.yml
+  - name: Docker build & Push
+    plan:
+
+    - get: release-rc
+      passed: ["Master build"]
+      params:
+        globs:
+          - super_*_linux_amd64
+      #trigger: true
+
+    - get: super-app
+      passed: ["Master build"]
+      trigger: true
+
+    - task: integeration test
+      file: super-app/tutorial/scenario.4/2-releases/tasks/integeration.yml

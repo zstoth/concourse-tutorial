@@ -23,7 +23,7 @@ jobs:
       params: {path: super-app, context: Unit tests, status: pending}
 
     - task: run unit
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/unit.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/unit.yml
       on_success:
     # Define success/failure on a job level
     on_success:
@@ -43,7 +43,7 @@ jobs:
       params: {path: super-app, context: lint tests, status: pending}
 
     - task: run lint
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/lint.yml
     # Define success/failure on a job level
     on_success:
         put: super-app
@@ -63,10 +63,10 @@ jobs:
       params: {path: super-app, context: build & integeration tests, status: pending}
 
     - task: run lint
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/lint.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/lint.yml
 
     - task: build
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/build.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/build.yml
       on_failure:
         do:
          - put: super-app
@@ -75,7 +75,7 @@ jobs:
            params: {path: super-app, context: build, status: failure}
 
     - task: integeration test
-      file: super-app/tutorial/scenario.2/4-deconstructing/tasks/integeration.yml
+      file: super-app/tutorial/scenario.3/2-on/tasks/integeration.yml
       on_failure:
         do:
          - put: super-app

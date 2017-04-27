@@ -37,4 +37,4 @@ jobs:
 
 
     # - task: integeration test
-    #   file: super-app/tutorial/scenario.2/1-multi-os/tasks/integeration.yml
+    #   file: super-app/tutorial/scenario.4/1-multi-os/tasks/integeration.yml
