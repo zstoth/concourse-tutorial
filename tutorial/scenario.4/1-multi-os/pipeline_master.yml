@@ -29,8 +29,8 @@ jobs:
       - task: build linux
         file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_linux.yml
 
-      - task: build mac
-        file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_mac.yml
+      - task: build darwin
+        file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_darwin.yml
 
       - task: build windows
         file: super-app/tutorial/scenario.4/1-multi-os/tasks/build_windows.yml

@@ -11,9 +11,9 @@ run:
   - |
     ./scripts/go_deps.sh
     ./scripts/go_build.sh darwin 0.0.1
-    mv super_*_linux_amd64 ../artifact_mac
+    mv super_*_darwin_amd64 ../artifact_darwin
   dir: super-app/
 inputs:
   - name: super-app
 outputs:
-  - name: artifact_mac
+  - name: artifact_darwin
