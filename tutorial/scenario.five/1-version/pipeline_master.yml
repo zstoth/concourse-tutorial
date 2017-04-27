@@ -6,13 +6,13 @@ resources:
       uri: https://github.com/hellofresh/concourse-tutorial.git
       branch: ci
 
-  -   name: release-rc
-      type: github-release
-      source:
-        user: hellofresh
-        repository: concourse-tutorial
-        access_token: {{github_token}}
-        pre_release: True
+  - name: release-rc
+    type: github-release
+    source:
+      user: hellofresh
+      repository: concourse-tutorial
+      access_token: {{github_token}}
+      pre_release: True
 
   - name: docker-image
     type: docker-image
