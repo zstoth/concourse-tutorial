@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-which gofmt
+echo "" | gofmt
 set +e
 
 # Just get path relative to this script and go to root
