@@ -1,0 +1,119 @@
+---
+resources:
+  - name: super-app
+    type: git
+    source:
+      uri: https://github.com/hellofresh/concourse-tutorial.git
+      branch: ci
+
+  -   name: release-rc
+      type: github-release
+      source:
+        user: hellofresh
+        repository: concourse-tutorial
+        access_token: {{github_token}}
+        pre_release: True
+
+  - name: docker-image
+    type: docker-image
+    source:
+      username: hellofresh+test_concourse_ci
+      password: {{docker_password}}
+      repository: quay.io/hellofresh/concourse-tutorial
+
+  - name: semantic
+    type: semver
+    source:
+        driver: git
+        initial_version: 0.0.1
+        uri: {{github_url}}
+        branch: version
+        file: version
+
+jobs:
+  - name: initial testing
+    plan:
+    - get: super-app
+      trigger: true
+
+    - aggregate:
+      - task: run unit
+        file: super-app/tutorial/scenario.five/1-version/tasks/unit.yml
+
+      - task: run lint
+        file: super-app/tutorial/scenario.five/1-version/tasks/lint.yml
+
+  - name: Bump RC
+    plan:
+    - get: super-app
+      passed: ["initial testing"]
+      trigger: true
+
+    - put: semantic
+      params:
+        pre: rc
+
+  - name: Master build
+    plan:
+    - get: super-app
+      passed: ["Bump RC"]
+      trigger: true
+
+    - get: semantic
+
+    - aggregate:
+      - task: build linux
+        file: super-app/tutorial/scenario.five/1-version/tasks/build_linux.yml
+
+      - task: build darwin
+        file: super-app/tutorial/scenario.five/1-version/tasks/build_darwin.yml
+
+      - task: build windows
+        file: super-app/tutorial/scenario.five/1-version/tasks/build_windows.yml
+
+    - put: release-rc
+      params:
+        name: semantic/version
+        tag : semantic/version
+        tag_prefix: v
+        globs:
+          - artifact_linux/super_*_linux_amd64
+          - artifact_windows/super_*_windows_amd64
+          - artifact_darwin/super_*_darwin_amd64
+
+  - name: Integeration test
+    plan:
+
+    - get: release-rc
+      passed: ["Master build"]
+      params:
+        globs:
+          - super_*_linux_amd64
+      #trigger: true
+
+    - get: super-app
+      passed: ["Master build"]
+      trigger: true
+
+    - task: integeration test
+      file: super-app/tutorial/scenario.five/1-version/tasks/integeration.yml
+
+  - name: Build docker
+    plan:
+      # Basicly copy linux binary and dockerfile
+    - get: release-rc
+      #passed: ["Master build"]
+      params:
+        globs:
+          - super_*_linux_amd64
+    - get: super-app
+      passed: ["Integeration test"]
+      trigger: true
+
+    - task: Prepare docker directory
+      file: super-app/tutorial/scenario.five/1-version/tasks/prepare_docker.yml
+
+    - put: docker-image
+      params:
+        build: docker_dir
+        tag: super-app/tutorial/scenario.five/1-version/version
