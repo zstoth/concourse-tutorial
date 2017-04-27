@@ -1,0 +1,18 @@
+---
+
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: golang}
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    cp release-rc/super_*_linux_amd64  ./docker_dir/
+    cp super-app/Dockerfile ./docker_dir
+inputs:
+  - name: super-app
+  - name: release-rc
+outputs:
+  - name: docker_dir

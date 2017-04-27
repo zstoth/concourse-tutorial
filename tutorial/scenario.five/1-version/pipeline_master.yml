@@ -83,7 +83,6 @@ jobs:
 
   - name: Integeration test
     plan:
-
     - get: release-rc
       passed: ["Master build"]
       params:
@@ -100,12 +99,13 @@ jobs:
 
   - name: Build docker
     plan:
-      # Basicly copy linux binary and dockerfile
     - get: release-rc
-      #passed: ["Master build"]
       params:
         globs:
           - super_*_linux_amd64
+
+    - get: semantic
+
     - get: super-app
       passed: ["Integeration test"]
       trigger: true
@@ -116,4 +116,4 @@ jobs:
     - put: docker-image
       params:
         build: docker_dir
-        tag: super-app/tutorial/scenario.five/1-version/version
+        tag: semantic/version
