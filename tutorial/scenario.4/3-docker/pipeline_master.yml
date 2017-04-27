@@ -14,6 +14,13 @@ resources:
         access_token: {{github_token}}
         pre_release: True
 
+  - name: docker-image
+    type: docker-image
+    source:
+      username: hellofresh+test_concourse_ci
+      password: XXXXXXXX
+      repository: quay.io/hellofresh/concourse-tutorial
+
 jobs:
   - name: initial testing
     plan:
@@ -84,3 +91,9 @@ jobs:
 
     - task: Prepare docker directory
       file: super-app/tutorial/scenario.4/3-docker/tasks/prepare_docker.yml
+
+    - put: docker-image
+      params:
+        build: docker_dir
+        tag: super-app/tutorial/scenario.4/3-docker/version
+
