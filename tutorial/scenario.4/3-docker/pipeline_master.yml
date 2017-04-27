@@ -1,0 +1,86 @@
+---
+resources:
+  - name: super-app
+    type: git
+    source:
+      uri: https://github.com/hellofresh/concourse-tutorial.git
+      branch: ci
+
+  -   name: release-rc
+      type: github-release
+      source:
+        user: hellofresh
+        repository: concourse-tutorial
+        access_token: {{github_token}}
+        pre_release: True
+
+jobs:
+  - name: initial testing
+    plan:
+    - get: super-app
+      trigger: true
+
+    - aggregate:
+      - task: run unit
+        file: super-app/tutorial/scenario.4/3-docker/tasks/unit.yml
+
+      - task: run lint
+        file: super-app/tutorial/scenario.4/3-docker/tasks/lint.yml
+
+  - name: Master build
+    plan:
+    - get: super-app
+      passed: ["initial testing"]
+      trigger: true
+
+    - aggregate:
+      - task: build linux
+        file: super-app/tutorial/scenario.4/3-docker/tasks/build_linux.yml
+
+      - task: build darwin
+        file: super-app/tutorial/scenario.4/3-docker/tasks/build_darwin.yml
+
+      - task: build windows
+        file: super-app/tutorial/scenario.4/3-docker/tasks/build_windows.yml
+
+    - put: release-rc
+      params:
+        name: super-app/tutorial/scenario.4/3-docker/version
+        tag : super-app/tutorial/scenario.4/3-docker/version
+        tag_prefix: v
+        globs:
+          - artifact_linux/super_*_linux_amd64
+          - artifact_windows/super_*_windows_amd64
+          - artifact_darwin/super_*_darwin_amd64
+
+  - name: Integeration test
+    plan:
+
+    - get: release-rc
+      passed: ["Master build"]
+      params:
+        globs:
+          - super_*_linux_amd64
+      #trigger: true
+
+    - get: super-app
+      passed: ["Master build"]
+      trigger: true
+
+    - task: integeration test
+      file: super-app/tutorial/scenario.4/3-docker/tasks/integeration.yml
+
+  - name: Build docker
+    plan:
+      # Basicly copy linux binary and dockerfile
+    - get: release-rc
+      #passed: ["Master build"]
+      params:
+        globs:
+          - super_*_linux_amd64
+    - get: super-app
+      passed: ["Integeration test"]
+      trigger: true
+
+    - task: Prepare docker directory
+      file: super-app/tutorial/scenario.4/3-docker/tasks/prepare_docker.yml
