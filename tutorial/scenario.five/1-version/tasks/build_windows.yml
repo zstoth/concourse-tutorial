@@ -17,4 +17,3 @@ inputs:
   - name: super-app
 outputs:
   - name: artifact_windows
-  - name: semantic
