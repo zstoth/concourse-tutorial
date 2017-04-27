@@ -8,6 +8,7 @@ run:
   args:
   - -exc
   - |
+    chmod +x ./release-rc/super_*_linux_amd64
     ./release-rc/super_*_linux_amd64&
     ./super-app/scripts/test_integeration.sh http://127.0.0.1:8080
     kill -9 `pgrep super_`
