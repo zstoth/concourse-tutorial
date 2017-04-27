@@ -15,5 +15,6 @@ run:
   dir: super-app/
 inputs:
   - name: super-app
+  - name: semantic
 outputs:
   - name: artifact_linux
