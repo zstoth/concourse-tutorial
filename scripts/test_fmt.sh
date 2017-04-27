@@ -1,4 +1,7 @@
 #!/bin/sh
+set -e
+which gofmt
+set +e
 
 # Just get path relative to this script and go to root
 MY_PATH="$(dirname "${0}")"     # relative
