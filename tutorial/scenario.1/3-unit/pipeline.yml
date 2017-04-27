@@ -3,8 +3,8 @@ resources:
   - name: super-app
     type: git
     source:
-      uri: https://github.com/ahelal/concourse-tutorial.git
-      branch: feature/ci
+      uri: https://github.com/hellofresh/concourse-tutorial.git
+      branch: ci
 
 jobs:
   - name: Testing
