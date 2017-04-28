@@ -11,7 +11,7 @@ resources:
     type: pull-request
     source:
       repo: hellofresh/concourse-tutorial
-      access_token: REPLACE_ME
+      access_token: {{github_token}}
 
 jobs:
   - name: PR unit testing

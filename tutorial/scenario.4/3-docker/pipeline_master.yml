@@ -18,7 +18,7 @@ resources:
     type: docker-image
     source:
       username: hellofresh+test_concourse_ci
-      password: XXXXXXXX
+      password: {{docker_password}}
       repository: quay.io/hellofresh/concourse-tutorial
 
 jobs:
