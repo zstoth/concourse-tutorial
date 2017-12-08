@@ -1,0 +1,75 @@
+resources:
+  - name: super-app
+    type: git
+    source:
+      uri: https://github.com/zstoth/concourse-tutorial
+      branch: ci
+jobs:
+  - name: Testing
+    plan:
+    - get: super-app
+      trigger: true
+    - aggregate:
+      - task: Test
+        file: pipeline/testing-config.yml
+
+      - task: unit test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: {repository: golang}
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                ./scripts/go_deps.sh
+                ./scripts/test_unit.sh
+            dir: super-app/
+
+          inputs:
+            - name: super-app
+
+  - name: Building & Integration
+    plan:
+    - get: super-app
+      passed: ["Testing"]
+      trigger: true
+    - task: build
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: golang}
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              ./scripts/go_deps.sh
+              ./scripts/go_build.sh linux 0.0.1
+              mv super_*_linux_amd64 ../artifact
+          dir: super-app/
+        inputs:
+          - name: super-app
+        outputs:
+          - name: artifact
+
+    - task: integration
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: golang}
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              ./artifact/super_*_linux_amd64&
+              ./super-app/scripts/test_integeration.sh http://127.0.0.1:8080
+              kill -9 `pgrep super_`
+        inputs:
+          - name: super-app
+          - name: artifact
